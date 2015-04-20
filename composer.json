@@ -1,11 +1,11 @@
 {
-    "name": "decebal/calculator",
-    "description": "Small Hand Calculator",
+    "name": "decebal/champions",
+    "description": "Minimum cost to become champions",
     "keywords": [
         "decebal",
         "package"
     ],
-    "homepage": "https://github.com/decebal/calculator",
+    "homepage": "https://github.com/decebal/champions",
     "license": "MIT",
     "authors": [
         {
@@ -16,7 +16,8 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0",
+        "php": ">=5.4.0",
+        "ext-mongo": "*",
         "league/climate": "~3.0",
         "league/monga": "~1.1"
     },
