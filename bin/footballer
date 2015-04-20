@@ -1,0 +1,7 @@
+<?php
+
+require(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'bootstrap.php');
+
+$controller = new \App\Controller\DefaultController($climate, $monga);
+
+$controller->getOutput()->usage();
