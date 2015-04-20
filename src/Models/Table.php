@@ -9,6 +9,8 @@
 namespace App\Models;
 
 
-class Table {
+class Table
+{
+    public $fields = [];
 
 }
