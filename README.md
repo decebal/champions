@@ -1,20 +1,20 @@
-# Calculator
-Small Calculator Sample
+# Champions
+Determine minimum no of matches to be removed for each team in order to become
+champions
 
 ## Install
 
 Via Git
 
 ``` bash
-$ git clone https://github.com/solid-decebal/calculator.git
+$ git clone https://github.com/solid-decebal/champions.git
 $ composer install
 ```
 
 ## Usage
 
-``` php
-$calculator = new App\Controller\CalculatorController();
-echo $calculator->compute('3+6*2-1');
+``` 
+   php bin/footballer
 ```
 
 ## Testing
