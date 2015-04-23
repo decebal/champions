@@ -9,6 +9,15 @@
 namespace App\Contracts;
 
 
-interface TemporaryTableInterface {
+interface TemporaryTableInterface
+{
+    /**
+     * @return mixed
+     */
+    function buildFullTable();
 
+    /**
+     * @return mixed
+     */
+    function getFullTable();
 }

@@ -8,33 +8,32 @@
 
 namespace App\Contracts;
 
-
-use League\CLImate\CLImate;
+use App\Providers\CLIServiceProvider;
+use App\Providers\MongoServiceProvider;
+use League\Container\ContainerAwareInterface;
+use League\Container\ContainerAwareTrait;
+use League\Container\ContainerInterface;
 use League\Monga;
 
-abstract class BaseController
+abstract class BaseController implements ContainerAwareInterface
 {
-    /**
-     * @var CLImate
-     */
-    protected $output;
+    use ContainerAwareTrait;
 
-    /**
-     * @var Monga
-     */
-    protected $mongoConnection;
-
-    public function __construct(CLImate $output, Monga\Connection $mongoConnection)
+    public function __construct(ContainerInterface  $container)
     {
-        $this->output = $output;
-        $this->mongoConnection = $mongoConnection;
+        $this->setContainer($container);
+
+        $this->registerProviders();
     }
 
     /**
-     * @return CLImate
+     * @return $this
      */
-    public function getOutput()
+    public function registerProviders()
     {
-        return $this->output;
+        $this->getContainer()->addServiceProvider(new MongoServiceProvider());
+        $this->getContainer()->addServiceProvider(new CLIServiceProvider());
+
+        return $this;
     }
 }
