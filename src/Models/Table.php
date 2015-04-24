@@ -10,16 +10,18 @@ namespace App\Models;
 
 
 use App\Contracts\BaseModel;
+use App\Contracts\TableTrait;
 use App\Contracts\TemporaryTableInterface;
 use League\Monga;
 
 class Table extends BaseModel implements TemporaryTableInterface
 {
+    use TableTrait;
+
     static protected $collection = 'fullTable';
 
     /**
      * @return mixed
-     * @throws Monga\MongoCursorException
      * @throws \Exception
      */
     function buildFullTable()
@@ -27,8 +29,8 @@ class Table extends BaseModel implements TemporaryTableInterface
         /**
          * @var Monga
          */
-        $awayTable = $this->mongo->collection('awayTeams')->find()->toArray();
-        $homeTable = $this->mongo->collection('homeTeams')->find()->toArray();
+        $awayTable = $this->mongo->collection('awayTable')->find()->toArray();
+        $homeTable = $this->mongo->collection('homeTable')->find()->toArray();
 
         if (!$homeTable || !$awayTable) {
             throw new \Exception('Mongo collections are needed, please update your mongo database');
@@ -39,6 +41,9 @@ class Table extends BaseModel implements TemporaryTableInterface
             $fullTable[$key]['_id'] = $teamLine['_id'];
             $fullTable[$key]['team'] = $teamLine['_id'];
             $fullTable[$key]['matches'] = $teamLine['matches'];
+            $fullTable[$key]['v'] = $teamLine['v'];
+            $fullTable[$key]['e'] = $teamLine['e'];
+            $fullTable[$key]['d'] = $teamLine['d'];
             $fullTable[$key]['points'] = $teamLine['points'];
             $fullTable[$key]['gf'] = $teamLine['gf'];
             $fullTable[$key]['ga'] = $teamLine['ga'];
@@ -47,6 +52,9 @@ class Table extends BaseModel implements TemporaryTableInterface
 
         foreach ($homeTable as $key => $teamLine) {
             $fullTable[$key]['matches'] += $teamLine['matches'];
+            $fullTable[$key]['v'] += $teamLine['v'];
+            $fullTable[$key]['e'] += $teamLine['e'];
+            $fullTable[$key]['d'] += $teamLine['d'];
             $fullTable[$key]['points'] += $teamLine['points'];
             $fullTable[$key]['gf'] += $teamLine['gf'];
             $fullTable[$key]['ga'] += $teamLine['ga'];
@@ -54,13 +62,7 @@ class Table extends BaseModel implements TemporaryTableInterface
         }
         unset($teamLine);
 
-        uasort($fullTable, function($lineA, $lineB) {
-            if ($lineA['points'] == $lineB['points']) {
-                return $lineA['gd'] > $lineB['gd'] ? -1 : 1;
-            }
-
-            return $lineA['points'] > $lineB['points'] ? -1 : 1;
-        });
+        $fullTable = $this->sortTable($fullTable);
 
         $this->mongoCollection->truncate();
         foreach ($fullTable as $line) {

@@ -14,12 +14,33 @@ db.matches.aggregate([
                     ] 
                 } 
             },
+            v: { $sum:
+                {
+                    $cond: [
+                        { $gt:["$FTAG","$FTHG"] }, 1 , 0
+                    ]
+                }
+            },
+            e: { $sum:
+                {
+                    $cond: [
+                        { $eq:["$FTHG","$FTAG"] }, 1 , 0
+                    ]
+                }
+            },
+            d: { $sum:
+                {
+                    $cond: [
+                        { $gt:["$FTAG","$FTHG"] }, 0 , 1
+                    ]
+                }
+            },
            gf: { $sum : "$FTAG" },
            ga: { $sum : "$FTHG" }
         } 
     }, 
     { $sort : { points: -1 } }, 
-    { $out: "awayTeams" } 
+    { $out: "awayTable" }
 ]);
 
 

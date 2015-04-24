@@ -28,8 +28,8 @@ class DefaultController extends BaseController
 
     public function computeMinMatchesFor($teamString = '')
     {
-        $teamModel = $this->getContainer()->get('teamModel');
         try {
+            $teamModel = $this->getContainer()->get('teamModel');
             $minNoOfMatches = $teamModel->computeMinNoOfMatches($teamString);
             $this->getContainer()->get('cli')->blue($minNoOfMatches);
         } catch (\Exception $ex) {

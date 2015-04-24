@@ -8,9 +8,15 @@
 
 namespace App\Models;
 
+use App\Contracts\ChampionTrait;
+use App\Contracts\TableTrait;
 use App\Contracts\TemporaryTableInterface;
 
-class Team {
+class Team
+{
+    use ChampionTrait;
+    use TableTrait;
+
     /**
      * @var TemporaryTableInterface
      */
@@ -18,9 +24,10 @@ class Team {
 
     protected $fullTable = [];
     protected $positionTable = [];
-    protected $temporaryTable = [];
-
-    protected $matches = 0;
+    /**
+     * @var array|\SplPriorityQueue
+     */
+    protected $temporaryTableQueue = [];
 
     /**
      * @param TemporaryTableInterface $table
@@ -51,34 +58,90 @@ class Team {
             throw new \Exception('Please ask for a team by the name in fullTable');
         }
 
-        $table = $this->computePositionTable($this->fullTable);
+        $this->fullTable = $this->computePositionTable($this->fullTable);
 
-        if ($table[$teamString]['position'] !== 1) {
-            $table[$teamString]['position'] = $this->makeChampion($teamString);
+        //already champion
+        if ($this->fullTable[$teamString]['position'] !== 1) {
+            $this->makeChampion($teamString);
         }
 
         return $this->matches;
     }
 
     /**
-     * @param $table
-     * @return array
+     * @param string $teamString
+     * @param array $table
+     * @return $this
      */
-    public function computePositionTable($table)
+    public function makeChampion($teamString = '', $table = [])
     {
-        $positionTable = [];
-        $pos = 1;
-        foreach($table as $key => $value) {
-            $positionTable[$key]['position'] = $pos++;
+        $this->setTemporaryQueue($teamString, ($table?:$this->fullTable));
+
+        $championLine = [];
+        $championLine['team'] = '';
+
+        while (!($championLine['team'] === $teamString)) {
+            $championLine = $this->temporaryTableQueue->extract();
+            if ($this->temporaryTableQueue->isEmpty()) {
+                return $this;
+            }
         }
 
-        return $positionTable;
+        if ($championLine['position'] == 1) {
+            return $this;
+        }
+
+        if ($this->temporaryTableQueue->isEmpty()) {
+            return $this;
+        }
+
+        $auxTable = [];
+        while($this->temporaryTableQueue->valid()) {
+            $current = $this->temporaryTableQueue->current();
+
+            $pointDiff = $current['points'] - $championLine['points'];
+            $buff = ($current['points'] - $championLine['points']) % 3;
+            if ($pointDiff <= 2) {
+                //get matches between teams in current queue
+
+                //check if any equalities might be subtracted
+
+                //update table if there are changes
+
+                //continue
+                $buff -= 3;
+            }
+
+            $auxTable[$current['team']] = $this->subtractVictories(
+                $current,
+                $championLine,
+                $buff
+            );
+
+            $this->temporaryTableQueue->next();
+        }
+
+        //prepare the table for re-compute
+        $auxTable = $this->rebuildTable($championLine, $auxTable);
+        $this->makeChampion($teamString, $auxTable);
+
+        return $this;
     }
 
     /**
      * @param $teamString
+     * @param $table
      */
-    private function makeChampion($teamString)
+    protected function setTemporaryQueue($teamString, $table)
     {
+        $this->temporaryTableQueue = new \SplPriorityQueue();
+
+        foreach ($table as $team => $line) {
+            $this->temporaryTableQueue->insert($line, $line['position']);
+            if ($teamString == $team) {
+                break;
+            }
+        }
     }
+
 }
