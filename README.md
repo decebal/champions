@@ -17,8 +17,8 @@ $ composer install
    php bin/footballer
 ```
 
-## Implementation
-Requires MongoDb
+## Requires
+- MongoDb
 
 ## Credits
 
