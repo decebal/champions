@@ -17,6 +17,8 @@ $ composer install
    php bin/footballer
 ```
 
+## Implementation
+Requires MongoDb
 
 ## Credits
 
@@ -26,7 +28,3 @@ $ composer install
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more
 information.
-
-## Implementation
-
-
