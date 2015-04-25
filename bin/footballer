@@ -3,5 +3,28 @@
 require(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'bootstrap.php');
 
 $controller = new \App\Controller\DefaultController($container);
+$climate = $controller->getContainer()->get('cli');
 
-$controller->getContainer()->get('cli')->usage();
+try {
+    $climate->arguments->parse();
+
+    if ($climate->arguments->get('fullTable')) {
+        $controller->listTable();
+        exit();
+    }
+
+    //if it reaches this line, show help
+    if ($climate->arguments->get('help')) {
+        $controller->getContainer()->get('cli')->usage();
+        exit();
+    }
+
+    if ($climate->arguments->get('team')) {
+        $controller->computeMinMatchesFor($climate->arguments->get('team'));
+        exit();
+    }
+} catch (\Exception $e) {
+    $climate->error($e->getMessage());
+    $controller->getContainer()->get('cli')->usage();
+}
+

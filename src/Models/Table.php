@@ -90,4 +90,32 @@ class Table extends BaseModel implements TemporaryTableInterface
 
         return $fullTable;
     }
+
+    /**
+     * @param array $opponents
+     * @param string $exclude
+     */
+    function getMatchesBetween($opponents = array(), $exclude = '')
+    {
+        $teamList = [];
+        foreach ($opponents as $line) {
+            if ($exclude && $line['team'] === $exclude) {
+                break;
+            }
+
+            $teamList[] = $line['team'];
+        }
+
+        /**
+         * @var Monga\Collection
+         */
+        $matchCollection = $this->mongo->collection('matches');
+
+        $results = $matchCollection->find(function ($query) use ($teamList) {
+            $query->whereIn('HomeTeam', $teamList)
+                ->andWhereIn('AwayTeam', $teamList);
+        });
+
+        return $results->toArray();
+    }
 }

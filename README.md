@@ -17,12 +17,6 @@ $ composer install
    php bin/footballer
 ```
 
-## Testing
-
-``` bash
-$ phpunit
-$ phpspec
-```
 
 ## Credits
 
@@ -32,3 +26,7 @@ $ phpspec
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more
 information.
+
+## Implementation
+
+

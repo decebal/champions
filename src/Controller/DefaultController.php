@@ -28,12 +28,27 @@ class DefaultController extends BaseController
 
     public function computeMinMatchesFor($teamString = '')
     {
+        $climate = $this->getContainer()->get('cli');
         try {
-            $teamModel = $this->getContainer()->get('teamModel');
+            $teamModel = $this->getContainer()->get('teamService');
+            if ($climate->arguments->defined('verbose')) {
+                $climate->br()->border('-*-', 50);
+            }
             $minNoOfMatches = $teamModel->computeMinNoOfMatches($teamString);
-            $this->getContainer()->get('cli')->blue($minNoOfMatches);
+
+            if ($climate->arguments->defined('verbose')) {
+                $climate->br()->border('-*-', 50);
+            }
+            $teamModel->skipEqualities()->restartCount();
+            $minNoOfMatchesWithoutEq = $teamModel->computeMinNoOfMatches($teamString);
+
+            $min = min([$minNoOfMatchesWithoutEq, $minNoOfMatches]);
+
+            $message = sprintf("The minimum number of matches for %s to be champion is: ", $teamString);
+            $climate->green($message);
+            $climate->yellow($min);
         } catch (\Exception $ex) {
-            $this->getContainer()->get('cli')->error($ex->getMessage());
+            $climate->error($ex->getMessage());
         }
 
         return ;

@@ -11,8 +11,8 @@ return [
         'class'     => 'App\Models\Table',
         'arguments' => ['mongo'],
     ],
-    'teamModel' => [
-        'class'     => 'App\Models\Team',
-        'arguments' => ['tableModel'],
+    'teamService' => [
+        'class'     => 'App\Services\Team',
+        'arguments' => ['tableModel', 'cli'],
     ],
 ];

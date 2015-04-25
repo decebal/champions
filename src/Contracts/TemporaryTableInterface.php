@@ -20,4 +20,6 @@ interface TemporaryTableInterface
      * @return mixed
      */
     function getFullTable();
+
+    function getMatchesBetween();
 }
